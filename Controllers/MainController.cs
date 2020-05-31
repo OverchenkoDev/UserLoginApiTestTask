@@ -92,6 +92,7 @@ namespace UserLoginApi.Controllers
                 return new JsonResult(result);
         }
 
+        [Authorize]
         [HttpPut("updateUser")]
         public IActionResult UpdateUser(UserNotes data)
         {
