@@ -30,6 +30,14 @@ namespace UserLoginApi.Controllers
         [HttpGet("getInfo/{username}")]
         public IActionResult GetInfo(string username)
         {
+            var currentUser = HttpContext.User;
+            if (currentUser.Identities.Count() > 0)
+            {
+                if (currentUser.Identity.Name != username)
+                    return Unauthorized();
+            }
+            else
+                return Unauthorized();
             GetUserDataResult result = _operations.GetUserData(username);
             if (result.status == "not active")
             {
@@ -57,7 +65,7 @@ namespace UserLoginApi.Controllers
                 HttpStatusCode? result = _operations.LoginUser(user.Username, user.Password);
                 if (result == HttpStatusCode.OK)
                 {
-                    string encodedJwt = _token.GenerateToken();
+                    string encodedJwt = _token.GenerateToken(user);
                     var response = new
                     {
                         access_token = encodedJwt,
